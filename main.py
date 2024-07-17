@@ -11,7 +11,7 @@ ROWS, COLS = 9, 9
 SQUARE_SIZE = WIDTH // COLS
 GRID_COLOR = (0, 0, 0)
 SELECTED_COLOR = (100, 100, 255)
-GREEN = (0, 200, 0)
+GREEN = (250, 250, 200)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 FPS = 30
@@ -32,7 +32,8 @@ grid = [
 # Создание окна
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('СУДОКУ')
-
+fon = pygame.image.load('fon.jpg')
+fon = pygame.transform.scale(fon, (WIDTH, HEIGHT))
 # Инициализация звукового модуля Pygame
 mixer.init()
 
@@ -45,7 +46,7 @@ font = pygame.font.Font(None, 40)
 
 # Функция для отрисовки игрового поля
 def draw_board():
-    screen.fill(WHITE)
+    screen.blit(fon, (0, 0))
     for row in range(ROWS):
         for col in range(COLS):
             pygame.draw.rect(screen, GRID_COLOR, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 1)
@@ -133,7 +134,8 @@ def restart_game():
 # Функция для основного меню
 def main_menu():
     while True:
-        screen.fill(WHITE)
+        fon= pygame.image.load('fon.jpg')
+        screen.blit(fon, (0,0))
         draw_button('СТАРТ', 200, 250, 200, 50, GREEN, SELECTED_COLOR, main_loop)
         draw_button('ВЫХОД', 200, 350, 200, 50, GREEN, SELECTED_COLOR, quit_game)
 
