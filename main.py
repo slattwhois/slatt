@@ -6,15 +6,26 @@ import sys
 pygame.init()
 
 # Константы
-WIDTH, HEIGHT = 600, 600
-ROWS, COLS = 9, 9
-SQUARE_SIZE = WIDTH // COLS
-GRID_COLOR = (0, 0, 0)
-SELECTED_COLOR = (100, 100, 255)
-GREEN = (250, 250, 200)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-FPS = 30
+WIDTH, HEIGHT = 600, 600  # Размеры окна
+ROWS, COLS = 9, 9  # Количество строк и столбцов в Судоку
+SQUARE_SIZE = WIDTH // COLS  # Размер одной клетки
+GRID_COLOR = (0, 0, 0)  # Цвет сетки
+SELECTED_COLOR = (100, 100, 255)  # Цвет выделенной клетки
+WHITE = (255, 255, 255)  # Белый цвет
+BLACK = (0, 0, 0)  # Черный цвет
+FPS = 30  # Количество кадров в секунду
+
+# Цвета для градиента
+colors = [
+    (255, 155, 170),  # Лососевый Крайола
+    (255, 178, 139),  # Светлый желто-розовый
+    (252, 232, 131),  # Желтый Крайола
+    (190, 189, 127),  # Зелено-бежевый
+    (198, 223, 144),  # Очень светлый желто-зеленый
+    (153, 255, 153),  # Салатовый
+    (175, 218, 252),  # Синий-синий иней
+    (230, 230, 250)   # Лавандовый
+]
 
 # Пример заполненного поля Судоку
 grid = [
@@ -32,8 +43,7 @@ grid = [
 # Создание окна
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('СУДОКУ')
-fon = pygame.image.load('fon.jpg')
-fon = pygame.transform.scale(fon, (WIDTH, HEIGHT))
+
 # Инициализация звукового модуля Pygame
 mixer.init()
 
@@ -43,10 +53,27 @@ mixer.music.play(-1)  # -1 для зацикливания музыки
 
 # Шрифты
 font = pygame.font.Font(None, 40)
+fon = pygame.image.load('fon.jpg')
+fon = pygame.transform.scale(fon, (WIDTH, HEIGHT))
+
+# Функция для отрисовки градиента
+def draw_gradient():
+    num_colors = len(colors)
+    stripe_height = HEIGHT // num_colors
+
+    for i in range(num_colors):
+        start_color = colors[i]
+        end_color = colors[(i + 1) % num_colors]
+        for y in range(stripe_height):
+            ratio = y / stripe_height
+            r = int(start_color[0] * (1 - ratio) + end_color[0] * ratio)
+            g = int(start_color[1] * (1 - ratio) + end_color[1] * ratio)
+            b = int(start_color[2] * (1 - ratio) + end_color[2] * ratio)
+            pygame.draw.line(screen, (r, g, b), (0, i * stripe_height + y), (WIDTH, i * stripe_height + y))
 
 # Функция для отрисовки игрового поля
 def draw_board():
-    screen.blit(fon, (0, 0))
+    draw_gradient()
     for row in range(ROWS):
         for col in range(COLS):
             pygame.draw.rect(screen, GRID_COLOR, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 1)
@@ -134,10 +161,9 @@ def restart_game():
 # Функция для основного меню
 def main_menu():
     while True:
-        fon= pygame.image.load('fon.jpg')
-        screen.blit(fon, (0,0))
-        draw_button('СТАРТ', 200, 250, 200, 50, GREEN, SELECTED_COLOR, main_loop)
-        draw_button('ВЫХОД', 200, 350, 200, 50, GREEN, SELECTED_COLOR, quit_game)
+        screen.blit(fon, (0, 0))  # Отрисовка фона
+        draw_button('СТАРТ', 200, 250, 200, 50, WHITE, SELECTED_COLOR, main_loop)  # Кнопка старта игры
+        draw_button('ВЫХОД', 200, 350, 200, 50, WHITE, SELECTED_COLOR, quit_game)  # Кнопка выхода
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -179,7 +205,7 @@ def main_loop():
             if all(is_valid_move(row, col, grid[row][col]) for row in range(ROWS) for col in range(COLS) if grid[row][col] != 0):
                 pygame.mixer.music.stop()
                 game_over = True
-                text_surface = font.render('You Win!', True, GREEN)
+                text_surface = font.render('You Win!', True, WHITE)
                 text_rect = text_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2))
                 screen.blit(text_surface, text_rect)
             else:
@@ -187,8 +213,8 @@ def main_loop():
                 text_surface = font.render('Invalid Solution!', True, (255, 0, 0))
                 text_rect = text_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2))
                 screen.blit(text_surface, text_rect)
-            draw_button('Restart', 200, 400, 200, 50, GREEN, SELECTED_COLOR, restart_game)
-            draw_button('Quit', 200, 500, 200, 50, GREEN, SELECTED_COLOR, quit_game)
+            draw_button('Restart', 200, 400, 200, 50, WHITE, SELECTED_COLOR, restart_game)
+            draw_button('Quit', 200, 500, 200, 50, WHITE, SELECTED_COLOR, quit_game)
 
         pygame.display.flip()
         clock.tick(FPS)
